@@ -98,6 +98,7 @@ extension PhotoViewController {
         }
         let minimumZoomScale = min(min(view.bounds.width / image.size.width, view.bounds.height / image.size.height), 1)
         scrollView.minimumZoomScale = minimumZoomScale
+        scrollView.zoomScale = minimumZoomScale
     }
 
     fileprivate func zoomImageView() {

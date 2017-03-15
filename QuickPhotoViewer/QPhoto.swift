@@ -15,12 +15,12 @@ public struct QPhoto {
     public var url: URL?
     public var thumbnailUrl: URL?
 
-    init(image: UIImage, thumbnailImage: UIImage?) {
+    public init(image: UIImage, thumbnailImage: UIImage?) {
         self.image = image
         self.thumbnailImage = thumbnailImage
     }
 
-    init(url: URL, thumbnailUrl: URL?) {
+    public init(url: URL, thumbnailUrl: URL?) {
         self.url = url
         self.thumbnailUrl = thumbnailUrl
     }

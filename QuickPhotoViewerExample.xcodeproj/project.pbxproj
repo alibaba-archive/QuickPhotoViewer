@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D36E6D101E797B61009D27AA /* ExampleTopToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D36E6D0F1E797B61009D27AA /* ExampleTopToolbar.swift */; };
+		D36E6D121E797B87009D27AA /* ExampleBottomToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D36E6D111E797B87009D27AA /* ExampleBottomToolbar.swift */; };
 		D3EC36A41E790B9E0084ABBA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36A31E790B9E0084ABBA /* AppDelegate.swift */; };
 		D3EC36A61E790B9E0084ABBA /* ExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36A51E790B9E0084ABBA /* ExampleViewController.swift */; };
 		D3EC36A91E790B9E0084ABBA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3EC36A71E790B9E0084ABBA /* Main.storyboard */; };
@@ -32,6 +34,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D36E6D0F1E797B61009D27AA /* ExampleTopToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExampleTopToolbar.swift; sourceTree = "<group>"; };
+		D36E6D111E797B87009D27AA /* ExampleBottomToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExampleBottomToolbar.swift; sourceTree = "<group>"; };
 		D3EC36A01E790B9E0084ABBA /* QuickPhotoViewerExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickPhotoViewerExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3EC36A31E790B9E0084ABBA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D3EC36A51E790B9E0084ABBA /* ExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +82,8 @@
 			isa = PBXGroup;
 			children = (
 				D3EC36A31E790B9E0084ABBA /* AppDelegate.swift */,
+				D36E6D0F1E797B61009D27AA /* ExampleTopToolbar.swift */,
+				D36E6D111E797B87009D27AA /* ExampleBottomToolbar.swift */,
 				D3EC36C91E79492B0084ABBA /* ExamplePhotoCell.swift */,
 				D3EC36A51E790B9E0084ABBA /* ExampleViewController.swift */,
 				D3EC36A71E790B9E0084ABBA /* Main.storyboard */,
@@ -185,7 +191,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D36E6D101E797B61009D27AA /* ExampleTopToolbar.swift in Sources */,
 				D3EC36A61E790B9E0084ABBA /* ExampleViewController.swift in Sources */,
+				D36E6D121E797B87009D27AA /* ExampleBottomToolbar.swift in Sources */,
 				D3EC36CA1E79492B0084ABBA /* ExamplePhotoCell.swift in Sources */,
 				D3EC36A41E790B9E0084ABBA /* AppDelegate.swift in Sources */,
 			);

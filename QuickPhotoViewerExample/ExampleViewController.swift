@@ -8,6 +8,7 @@
 
 import UIKit
 import Kingfisher
+import QuickPhotoViewer
 
 let kExamplePhotos = ["http://192.168.0.21:10077/static/plangroups/backgroups/raw/01.png",
                       "http://192.168.0.21:10077/static/plangroups/backgroups/raw/02.png",
@@ -21,10 +22,16 @@ let kExamplePhotos = ["http://192.168.0.21:10077/static/plangroups/backgroups/ra
                       "http://192.168.0.21:10077/static/plangroups/backgroups/raw/10.png"]
 
 class ExampleViewController: UICollectionViewController {
+    fileprivate lazy var topToolbar: ExampleTopToolbar = {
+        let topToolbar = ExampleTopToolbar()
+        return topToolbar
+    }()
+    fileprivate var photoViewer: QuickPhotoViewer?
+
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView?.register(ExamplePhotoCell.self, forCellWithReuseIdentifier: kExamplePhotoCellID)
+        setupUI()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -39,6 +46,14 @@ class ExampleViewController: UICollectionViewController {
         }
     }
 
+    // MARK: - Helpers
+    fileprivate func setupUI() {
+        collectionView?.register(ExamplePhotoCell.self, forCellWithReuseIdentifier: kExamplePhotoCellID)
+        topToolbar.closeHandler = {
+            self.photoViewer?.dismiss(animated: true, completion: nil)
+        }
+    }
+
     // MARK: - UICollectionViewDataSource & UICollectionViewDelegate
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -50,9 +65,18 @@ class ExampleViewController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kExamplePhotoCellID, for: indexPath) as! ExamplePhotoCell
-        let photo = kExamplePhotos[indexPath.row]
-        cell.imageView.kf.setImage(with: URL(string: photo), placeholder: UIColor.lightText.toImage())
+        let photoUrl = kExamplePhotos[indexPath.row]
+        cell.imageView.kf.setImage(with: URL(string: photoUrl), placeholder: UIColor(white: 221 / 255, alpha: 1).toImage())
         return cell
+    }
+
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let photoUrl = kExamplePhotos[indexPath.row]
+        let photo = QPhoto(url: URL(string: photoUrl)!, thumbnailUrl: nil)
+        photoViewer = QuickPhotoViewer()
+        photoViewer?.topToolbar = topToolbar
+        photoViewer?.photos = [photo]
+        present(photoViewer!, animated: true, completion: nil)
     }
 }
 
