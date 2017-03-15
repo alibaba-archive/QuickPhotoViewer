@@ -11,9 +11,10 @@
 		D3EC36A61E790B9E0084ABBA /* ExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36A51E790B9E0084ABBA /* ExampleViewController.swift */; };
 		D3EC36A91E790B9E0084ABBA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3EC36A71E790B9E0084ABBA /* Main.storyboard */; };
 		D3EC36AB1E790B9E0084ABBA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3EC36AA1E790B9E0084ABBA /* Assets.xcassets */; };
-		D3EC36AE1E790B9E0084ABBA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3EC36AC1E790B9E0084ABBA /* LaunchScreen.storyboard */; };
 		D3EC36B91E790E440084ABBA /* QuickPhotoViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3EC36B81E790E440084ABBA /* QuickPhotoViewer.framework */; };
 		D3EC36BA1E790E440084ABBA /* QuickPhotoViewer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D3EC36B81E790E440084ABBA /* QuickPhotoViewer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D3EC36CA1E79492B0084ABBA /* ExamplePhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36C91E79492B0084ABBA /* ExamplePhotoCell.swift */; };
+		D3EC36CD1E794A800084ABBA /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3EC36CC1E794A800084ABBA /* Kingfisher.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,9 +37,10 @@
 		D3EC36A51E790B9E0084ABBA /* ExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewController.swift; sourceTree = "<group>"; };
 		D3EC36A81E790B9E0084ABBA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D3EC36AA1E790B9E0084ABBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D3EC36AD1E790B9E0084ABBA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D3EC36AF1E790B9E0084ABBA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D3EC36B81E790E440084ABBA /* QuickPhotoViewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QuickPhotoViewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3EC36C91E79492B0084ABBA /* ExamplePhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotoCell.swift; sourceTree = "<group>"; };
+		D3EC36CC1E794A800084ABBA /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3EC36CD1E794A800084ABBA /* Kingfisher.framework in Frameworks */,
 				D3EC36B91E790E440084ABBA /* QuickPhotoViewer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -59,6 +62,7 @@
 				D3EC36B81E790E440084ABBA /* QuickPhotoViewer.framework */,
 				D3EC36A21E790B9E0084ABBA /* QuickPhotoViewerExample */,
 				D3EC36A11E790B9E0084ABBA /* Products */,
+				D3EC36CB1E794A800084ABBA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -74,13 +78,21 @@
 			isa = PBXGroup;
 			children = (
 				D3EC36A31E790B9E0084ABBA /* AppDelegate.swift */,
+				D3EC36C91E79492B0084ABBA /* ExamplePhotoCell.swift */,
 				D3EC36A51E790B9E0084ABBA /* ExampleViewController.swift */,
 				D3EC36A71E790B9E0084ABBA /* Main.storyboard */,
 				D3EC36AA1E790B9E0084ABBA /* Assets.xcassets */,
-				D3EC36AC1E790B9E0084ABBA /* LaunchScreen.storyboard */,
 				D3EC36AF1E790B9E0084ABBA /* Info.plist */,
 			);
 			path = QuickPhotoViewerExample;
+			sourceTree = "<group>";
+		};
+		D3EC36CB1E794A800084ABBA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D3EC36CC1E794A800084ABBA /* Kingfisher.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -94,6 +106,7 @@
 				D3EC369D1E790B9E0084ABBA /* Frameworks */,
 				D3EC369E1E790B9E0084ABBA /* Resources */,
 				D3EC36BB1E790E440084ABBA /* Embed Frameworks */,
+				D3EC36D11E7950FC0084ABBA /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -143,7 +156,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3EC36AE1E790B9E0084ABBA /* LaunchScreen.storyboard in Resources */,
 				D3EC36AB1E790B9E0084ABBA /* Assets.xcassets in Resources */,
 				D3EC36A91E790B9E0084ABBA /* Main.storyboard in Resources */,
 			);
@@ -151,12 +163,30 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		D3EC36D11E7950FC0084ABBA /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		D3EC369C1E790B9E0084ABBA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				D3EC36A61E790B9E0084ABBA /* ExampleViewController.swift in Sources */,
+				D3EC36CA1E79492B0084ABBA /* ExamplePhotoCell.swift in Sources */,
 				D3EC36A41E790B9E0084ABBA /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -170,14 +200,6 @@
 				D3EC36A81E790B9E0084ABBA /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		D3EC36AC1E790B9E0084ABBA /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D3EC36AD1E790B9E0084ABBA /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -282,6 +304,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = QuickPhotoViewerExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Teambition.QuickPhotoViewerExample;
@@ -296,6 +322,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = QuickPhotoViewerExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Teambition.QuickPhotoViewerExample;

@@ -8,12 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		D3EC36B71E790E020084ABBA /* QuickPhotoViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36B61E790E020084ABBA /* QuickPhotoViewer.swift */; };
+		D3EC36BD1E791C860084ABBA /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = D3EC36BC1E791C860084ABBA /* Cartfile */; };
+		D3EC36C01E791DD30084ABBA /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3EC36BF1E791DD30084ABBA /* Kingfisher.framework */; };
+		D3EC36C21E79211E0084ABBA /* QPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36C11E79211E0084ABBA /* QPhoto.swift */; };
+		D3EC36C41E7925130084ABBA /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36C31E7925130084ABBA /* PhotoViewController.swift */; };
+		D3EC36C61E7927050084ABBA /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36C51E7927050084ABBA /* Constants.swift */; };
+		D3EC36C81E7937670084ABBA /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36C71E7937670084ABBA /* Protocols.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D3EC368C1E790AF20084ABBA /* QuickPhotoViewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QuickPhotoViewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3EC36901E790AF20084ABBA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D3EC36B61E790E020084ABBA /* QuickPhotoViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickPhotoViewer.swift; sourceTree = "<group>"; };
+		D3EC36BC1E791C860084ABBA /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = SOURCE_ROOT; };
+		D3EC36BF1E791DD30084ABBA /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
+		D3EC36C11E79211E0084ABBA /* QPhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QPhoto.swift; sourceTree = "<group>"; };
+		D3EC36C31E7925130084ABBA /* PhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
+		D3EC36C51E7927050084ABBA /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		D3EC36C71E7937670084ABBA /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3EC36C01E791DD30084ABBA /* Kingfisher.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -33,6 +46,7 @@
 				D3EC368E1E790AF20084ABBA /* QuickPhotoViewer */,
 				D3EC36B51E790D9A0084ABBA /* Supporting Files */,
 				D3EC368D1E790AF20084ABBA /* Products */,
+				D3EC36BE1E791DD30084ABBA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -47,7 +61,11 @@
 		D3EC368E1E790AF20084ABBA /* QuickPhotoViewer */ = {
 			isa = PBXGroup;
 			children = (
+				D3EC36C71E7937670084ABBA /* Protocols.swift */,
+				D3EC36C11E79211E0084ABBA /* QPhoto.swift */,
 				D3EC36B61E790E020084ABBA /* QuickPhotoViewer.swift */,
+				D3EC36C31E7925130084ABBA /* PhotoViewController.swift */,
+				D3EC36C51E7927050084ABBA /* Constants.swift */,
 			);
 			path = QuickPhotoViewer;
 			sourceTree = "<group>";
@@ -56,9 +74,18 @@
 			isa = PBXGroup;
 			children = (
 				D3EC36901E790AF20084ABBA /* Info.plist */,
+				D3EC36BC1E791C860084ABBA /* Cartfile */,
 			);
 			name = "Supporting Files";
 			path = "QuickPhotoViewer/Supporting Files";
+			sourceTree = "<group>";
+		};
+		D3EC36BE1E791DD30084ABBA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D3EC36BF1E791DD30084ABBA /* Kingfisher.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -130,6 +157,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3EC36BD1E791C860084ABBA /* Cartfile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,7 +168,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3EC36C21E79211E0084ABBA /* QPhoto.swift in Sources */,
 				D3EC36B71E790E020084ABBA /* QuickPhotoViewer.swift in Sources */,
+				D3EC36C81E7937670084ABBA /* Protocols.swift in Sources */,
+				D3EC36C41E7925130084ABBA /* PhotoViewController.swift in Sources */,
+				D3EC36C61E7927050084ABBA /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +288,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/QuickPhotoViewer/Supporting Files/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -277,6 +313,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/QuickPhotoViewer/Supporting Files/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
