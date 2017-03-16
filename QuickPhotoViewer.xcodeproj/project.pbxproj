@@ -14,6 +14,8 @@
 		D3EC36C41E7925130084ABBA /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36C31E7925130084ABBA /* PhotoViewController.swift */; };
 		D3EC36C61E7927050084ABBA /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36C51E7927050084ABBA /* Constants.swift */; };
 		D3EC36C81E7937670084ABBA /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36C71E7937670084ABBA /* Protocols.swift */; };
+		D3EC36D31E7A90600084ABBA /* Animator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36D21E7A90600084ABBA /* Animator.swift */; };
+		D3EC36D51E7AA42A0084ABBA /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC36D41E7AA42A0084ABBA /* UIViewController+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		D3EC36C31E7925130084ABBA /* PhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
 		D3EC36C51E7927050084ABBA /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		D3EC36C71E7937670084ABBA /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		D3EC36D21E7A90600084ABBA /* Animator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Animator.swift; sourceTree = "<group>"; };
+		D3EC36D41E7AA42A0084ABBA /* UIViewController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +69,8 @@
 				D3EC36C11E79211E0084ABBA /* QPhoto.swift */,
 				D3EC36B61E790E020084ABBA /* QuickPhotoViewer.swift */,
 				D3EC36C31E7925130084ABBA /* PhotoViewController.swift */,
+				D3EC36D21E7A90600084ABBA /* Animator.swift */,
+				D3EC36D41E7AA42A0084ABBA /* UIViewController+Extension.swift */,
 				D3EC36C51E7927050084ABBA /* Constants.swift */,
 			);
 			path = QuickPhotoViewer;
@@ -172,7 +178,9 @@
 				D3EC36B71E790E020084ABBA /* QuickPhotoViewer.swift in Sources */,
 				D3EC36C81E7937670084ABBA /* Protocols.swift in Sources */,
 				D3EC36C41E7925130084ABBA /* PhotoViewController.swift in Sources */,
+				D3EC36D51E7AA42A0084ABBA /* UIViewController+Extension.swift in Sources */,
 				D3EC36C61E7927050084ABBA /* Constants.swift in Sources */,
+				D3EC36D31E7A90600084ABBA /* Animator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -26,6 +26,10 @@ class ExampleViewController: UICollectionViewController {
         let topToolbar = ExampleTopToolbar()
         return topToolbar
     }()
+    fileprivate lazy var bottomToolbar: ExampleBottomToolbar = {
+        let bottomToolbar = ExampleBottomToolbar()
+        return bottomToolbar
+    }()
     fileprivate var photoViewer: QuickPhotoViewer?
 
     // MARK: - Life cycle
@@ -52,6 +56,14 @@ class ExampleViewController: UICollectionViewController {
         topToolbar.closeHandler = {
             self.photoViewer?.dismiss(animated: true, completion: nil)
         }
+        bottomToolbar.shareHandler = {
+            guard let url = self.photoViewer?.currentPhoto?.url else {
+                return
+            }
+            let activityItems: [Any] = ["分享图片", url]
+            let activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+            self.photoViewer?.present(activityViewController, animated: true, completion: nil)
+        }
     }
 
     // MARK: - UICollectionViewDataSource & UICollectionViewDelegate
@@ -73,10 +85,14 @@ class ExampleViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let photoUrl = kExamplePhotos[indexPath.row]
         let photo = QPhoto(url: URL(string: photoUrl)!, thumbnailUrl: nil)
+
         photoViewer = QuickPhotoViewer()
         photoViewer?.topToolbar = topToolbar
+        photoViewer?.bottomToolbar = bottomToolbar
         photoViewer?.photos = [photo]
-        present(photoViewer!, animated: true, completion: nil)
+        if let cell = collectionView.cellForItem(at: indexPath) as? ExamplePhotoCell {
+            present(photoViewer!, from: cell.imageView)
+        }
     }
 }
 

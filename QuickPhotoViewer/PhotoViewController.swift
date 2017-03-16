@@ -9,22 +9,41 @@
 import UIKit
 import Kingfisher
 
-internal class PhotoViewController: UIViewController {
-    var photo: QPhoto!
+internal protocol PhotoViewControllerDelegate: class {
+    func photoViewControllerDidTapPhoto(_ controller: PhotoViewController)
+    func photoViewController(_ controller: PhotoViewController, didDoubleTapPhotoAt point: CGPoint, in view: UIView)
+    func photoViewControllerDidTapBackground(_ controller: PhotoViewController)
+    func photoViewController(_ controller: PhotoViewController, didDoubleTapBackgroundAt point: CGPoint, in view: UIView)
+}
 
+internal class PhotoViewController: UIViewController {
+    internal weak var delegate: PhotoViewControllerDelegate?
+    internal var photo: QPhoto!
     internal var pageIndex = 0
 
     fileprivate lazy var scrollView: UIScrollView = self.makeScrollView()
     fileprivate lazy var imageView: UIImageView = self.makeImageView()
 
-    fileprivate var imageViewWidth: NSLayoutConstraint!
-    fileprivate var imageViewHeight: NSLayoutConstraint!
+    fileprivate var imageViewLeading: NSLayoutConstraint!
+    fileprivate var imageViewTrailing: NSLayoutConstraint!
+    fileprivate var imageViewTop: NSLayoutConstraint!
+    fileprivate var imageViewBottom: NSLayoutConstraint!
 
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupGestureRecognizers()
         loadPhoto()
+    }
+
+    // MARK: - Public
+    internal func zoomPhotoToFit(from point: CGPoint, in view: UIView) {
+        if scrollView.zoomScale == scrollView.minimumZoomScale {
+            zoomImageViewToFit(from: view.convert(point, to: imageView))
+        } else {
+            zoomImageViewToMinimum()
+        }
     }
 }
 
@@ -36,7 +55,6 @@ extension PhotoViewController {
         edgesForExtendedLayout = .top
 
         scrollView.delegate = self
-        imageView.isUserInteractionEnabled = true
 
         view.addSubview(scrollView)
         scrollView.addSubview(imageView)
@@ -44,15 +62,37 @@ extension PhotoViewController {
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[scrollView]|", options: [], metrics: nil, views: ["scrollView": scrollView]))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[scrollView]|", options: [], metrics: nil, views: ["scrollView": scrollView]))
 
-        scrollView.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerX, relatedBy: .equal, toItem: scrollView, attribute: .centerX, multiplier: 1, constant: 0))
-        scrollView.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerY, relatedBy: .equal, toItem: scrollView, attribute: .centerY, multiplier: 1, constant: 0))
-        imageViewWidth = NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: .none, attribute: .notAnAttribute, multiplier: 1, constant: 0)
-        imageViewHeight = NSLayoutConstraint(item: imageView, attribute: .height, relatedBy: .equal, toItem: .none, attribute: .notAnAttribute, multiplier: 1, constant: 0)
-        scrollView.addConstraints([imageViewWidth, imageViewHeight])
+        imageViewLeading = NSLayoutConstraint(item: imageView, attribute: .leading, relatedBy: .equal, toItem: scrollView, attribute: .leading, multiplier: 1, constant: 0)
+        imageViewTrailing = NSLayoutConstraint(item: scrollView, attribute: .trailing, relatedBy: .equal, toItem: imageView, attribute: .trailing, multiplier: 1, constant: 0)
+        imageViewTop = NSLayoutConstraint(item: imageView, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0)
+        imageViewBottom = NSLayoutConstraint(item: scrollView, attribute: .bottom, relatedBy: .equal, toItem: imageView, attribute: .bottom, multiplier: 1, constant: 0)
+        scrollView.addConstraints([imageViewLeading, imageViewTrailing, imageViewTop, imageViewBottom])
+    }
+
+    fileprivate func setupGestureRecognizers() {
+        imageView.isUserInteractionEnabled = true
 
         let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
         singleTapGesture.numberOfTapsRequired = 1
         imageView.addGestureRecognizer(singleTapGesture)
+
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(imageDoubleTapped(_:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        imageView.addGestureRecognizer(doubleTapGesture)
+
+        singleTapGesture.require(toFail: doubleTapGesture)
+
+        view.isUserInteractionEnabled = true
+
+        let backgroundSingleTapGesture = UITapGestureRecognizer(target: self, action: #selector(backgroundTapped(_:)))
+        backgroundSingleTapGesture.numberOfTapsRequired = 1
+        view.addGestureRecognizer(backgroundSingleTapGesture)
+
+        let backgroundDoubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(backgroundDoubleTapped(_:)))
+        backgroundDoubleTapGesture.numberOfTapsRequired = 2
+        view.addGestureRecognizer(backgroundDoubleTapGesture)
+
+        backgroundSingleTapGesture.require(toFail: backgroundDoubleTapGesture)
     }
 
     fileprivate func loadPhoto() {
@@ -76,7 +116,8 @@ extension PhotoViewController {
     fileprivate func makeScrollView() -> UIScrollView {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.isScrollEnabled = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
         scrollView.maximumZoomScale = PhotoPreview.maximumZoomScale
         scrollView.minimumZoomScale = PhotoPreview.minimumZoomScale
         return scrollView
@@ -105,24 +146,59 @@ extension PhotoViewController {
         guard let image = imageView.image else {
             return
         }
-        if image.size.width > image.size.height {
-            imageViewWidth.constant = max(image.size.width * scrollView.zoomScale, view.bounds.width)
-            imageViewHeight.constant = image.size.height * scrollView.zoomScale
-        } else if image.size.width < image.size.height {
-            imageViewWidth.constant = image.size.width * scrollView.zoomScale
-            imageViewHeight.constant = max(image.size.height * scrollView.zoomScale, view.bounds.height)
-        } else {
-            imageViewWidth.constant = image.size.width * scrollView.zoomScale
-            imageViewHeight.constant = image.size.height * scrollView.zoomScale
-        }
+        let horizontalPadding = max((view.bounds.width - image.size.width * scrollView.zoomScale) / 2, 0)
+        let verticalPadding = max((view.bounds.height - image.size.height * scrollView.zoomScale) / 2, 0)
+        imageViewLeading.constant = horizontalPadding
+        imageViewTrailing.constant = horizontalPadding
+        imageViewTop.constant = verticalPadding
+        imageViewBottom.constant = verticalPadding
         view.layoutIfNeeded()
+    }
+
+    fileprivate func zoomImageViewToFit(from point: CGPoint) {
+        guard let image = imageView.image else {
+            return
+        }
+        let minimumZoomScaleForFit: CGFloat = 2
+
+        let scaleX = view.bounds.width / image.size.width
+        let scaleY = view.bounds.height / image.size.height
+
+        let scale: CGFloat = {
+            if min(scaleX, scaleY) > 1 {
+                return max(min(scaleX, scaleY), minimumZoomScaleForFit) * scrollView.minimumZoomScale
+            } else {
+                return max(max(scaleX, scaleY) / min(scaleX, scaleY), minimumZoomScaleForFit) * scrollView.minimumZoomScale
+            }
+        }()
+
+        let newWidth = scrollView.bounds.width / scale
+        let newHeight = scrollView.bounds.height / scale
+        let newRect = CGRect(x: point.x - newWidth / 2, y: point.y - newHeight / 2, width: newWidth, height: newHeight)
+        scrollView.zoom(to: newRect, animated: true)
+    }
+
+    fileprivate func zoomImageViewToMinimum() {
+        scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
     }
 }
 
 extension PhotoViewController {
     // MARK: - Actions
     func imageTapped(_ sender: UITapGestureRecognizer) {
+        delegate?.photoViewControllerDidTapPhoto(self)
+    }
 
+    func imageDoubleTapped(_ sender: UITapGestureRecognizer) {
+        delegate?.photoViewController(self, didDoubleTapPhotoAt: sender.location(in: imageView), in: imageView)
+    }
+
+    func backgroundTapped(_ sender: UITapGestureRecognizer) {
+        delegate?.photoViewControllerDidTapBackground(self)
+    }
+
+    func backgroundDoubleTapped(_ sender: UITapGestureRecognizer) {
+        delegate?.photoViewController(self, didDoubleTapBackgroundAt: sender.location(in: view), in: view)
     }
 }
 

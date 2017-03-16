@@ -50,7 +50,7 @@ internal extension URL {
     var cacheKey: String {
         var cacheKey = absoluteString
         if let query = query {
-            cacheKey.replacingOccurrences(of: query, with: "")
+            cacheKey = cacheKey.replacingOccurrences(of: query, with: "")
         }
         return cacheKey
     }
