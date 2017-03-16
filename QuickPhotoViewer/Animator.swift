@@ -39,9 +39,9 @@ internal class QuickPhotoViewerAnimator: NSObject, UIViewControllerAnimatedTrans
     internal func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         switch animation! {
         case .present(_):
-            return 0.3
+            return 0.25
         case .dismiss(_):
-            return 0.3
+            return 0.25
         }
     }
 
@@ -51,18 +51,24 @@ internal class QuickPhotoViewerAnimator: NSObject, UIViewControllerAnimatedTrans
             guard let toViewController = transitionContext.viewController(forKey: .to) else {
                 return
             }
+
             if let photoViewer = toViewController as? QuickPhotoViewer {
                 photoViewer.transitioningSourceView = fromView
             }
+
+            let fromRect = transitionContext.containerView.convert(fromView.frame, from: fromView.superview)
             let toRect = transitionContext.finalFrame(for: toViewController)
-            toViewController.view.frame = toRect
             transitionContext.containerView.addSubview(toViewController.view)
-            toViewController.view.alpha = 0
+
+            let scale = CGAffineTransform(scaleX: fromRect.width / toRect.width, y: fromRect.height / toRect.height)
+            let translation = CGAffineTransform(translationX: fromRect.midX - toRect.midX, y: fromRect.midY - toRect.midY)
+            toViewController.view.transform = scale.concatenating(translation)
+
             UIView.animate(withDuration: transitionDuration(using: transitionContext),
                            delay: 0,
-                           options: [.beginFromCurrentState],
+                           options: [.beginFromCurrentState, .curveEaseIn],
                            animations: {
-                            toViewController.view.alpha = 1
+                            toViewController.view.transform = CGAffineTransform(scaleX: 1, y: 1)
                 }, completion: { _ in
                     let success = !transitionContext.transitionWasCancelled
                     if !success {
@@ -70,26 +76,67 @@ internal class QuickPhotoViewerAnimator: NSObject, UIViewControllerAnimatedTrans
                     }
                     transitionContext.completeTransition(success)
             })
-        case .dismiss(_):
+
+        case .dismiss(let toView):
             guard let fromViewController = transitionContext.viewController(forKey: .from), let toViewController = transitionContext.viewController(forKey: .to) else {
                 return
             }
-            toViewController.view.frame = transitionContext.finalFrame(for: toViewController)
-            transitionContext.containerView.addSubview(toViewController.view)
-            transitionContext.containerView.addSubview(fromViewController.view)
-            fromViewController.view.alpha = 1
-            UIView.animate(withDuration: transitionDuration(using: transitionContext),
-                           delay: 0,
-                           options: [.beginFromCurrentState],
-                           animations: {
-                            fromViewController.view.alpha = 0
-                }, completion: { _ in
-                    let success = !transitionContext.transitionWasCancelled
-                    if !success {
-                        toViewController.view.removeFromSuperview()
-                    }
-                    transitionContext.completeTransition(success)
-            })
+
+            if let photoViewer = fromViewController as? QuickPhotoViewer, let photoViewController = photoViewer.viewControllers?.first as? PhotoViewController {
+                let fromPhoto = UIImageView(image: photoViewController.imageView.image)
+                fromPhoto.contentMode = .scaleAspectFill
+                let fromPhotoRect = transitionContext.containerView.convert(photoViewController.imageView.frame, from: photoViewController.imageView.superview)
+                photoViewController.imageView.removeFromSuperview()
+
+                let toRect = transitionContext.containerView.convert(toView.frame, from: toView.superview)
+                toViewController.view.frame = transitionContext.finalFrame(for: toViewController)
+                transitionContext.containerView.addSubview(toViewController.view)
+                transitionContext.containerView.addSubview(fromViewController.view)
+                fromViewController.view.alpha = 1
+                fromPhoto.frame = fromPhotoRect
+                transitionContext.containerView.addSubview(fromPhoto)
+
+                UIView.animate(withDuration: transitionDuration(using: transitionContext),
+                               delay: 0,
+                               options: [.beginFromCurrentState],
+                               animations: {
+                                let scale = CGAffineTransform(scaleX: toRect.width / fromPhotoRect.width, y: toRect.height / fromPhotoRect.height)
+                                let translation = CGAffineTransform(translationX: toRect.midX - fromPhotoRect.midX, y: toRect.midY - fromPhotoRect.midY)
+                                fromPhoto.transform = scale.concatenating(translation)
+                                fromViewController.view.alpha = 0
+                    }, completion: { _ in
+                        fromPhoto.removeFromSuperview()
+                        let success = !transitionContext.transitionWasCancelled
+                        if !success {
+                            toViewController.view.removeFromSuperview()
+                        }
+                        transitionContext.completeTransition(success)
+                })
+            } else {
+                let fromRect = transitionContext.initialFrame(for: fromViewController)
+                let toRect = transitionContext.containerView.convert(toView.frame, from: toView.superview)
+
+                toViewController.view.frame = transitionContext.finalFrame(for: toViewController)
+                transitionContext.containerView.addSubview(toViewController.view)
+                transitionContext.containerView.addSubview(fromViewController.view)
+                fromViewController.view.alpha = 1
+
+                UIView.animate(withDuration: transitionDuration(using: transitionContext),
+                               delay: 0,
+                               options: [.beginFromCurrentState],
+                               animations: {
+                                let scale = CGAffineTransform(scaleX: toRect.width / fromRect.width, y: toRect.height / fromRect.height)
+                                let translation = CGAffineTransform(translationX: toRect.midX - fromRect.midX, y: toRect.midY - fromRect.midY)
+                                fromViewController.view.transform = scale.concatenating(translation)
+                                fromViewController.view.alpha = 0
+                    }, completion: { _ in
+                        let success = !transitionContext.transitionWasCancelled
+                        if !success {
+                            toViewController.view.removeFromSuperview()
+                        }
+                        transitionContext.completeTransition(success)
+                })
+            }
         }
     }
 }

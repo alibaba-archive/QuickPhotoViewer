@@ -13,7 +13,8 @@ public protocol QuickPhotoViewerDataSource: class {
 }
 
 public protocol QuickPhotoViewerDelegate: class {
-
+    func photoViewer(_ photoViewer: QuickPhotoViewer, willScrollToPageAt pageIndex: Int)
+    func photoViewer(_ photoViewer: QuickPhotoViewer, didScrollToPageAt pageIndex: Int)
 }
 
 public extension QuickPhotoViewerDataSource {
@@ -21,5 +22,6 @@ public extension QuickPhotoViewerDataSource {
 }
 
 public extension QuickPhotoViewerDelegate {
-
+    func photoViewer(_ photoViewer: QuickPhotoViewer, willScrollToPageAt pageIndex: Int) { }
+    func photoViewer(_ photoViewer: QuickPhotoViewer, didScrollToPageAt pageIndex: Int) { }
 }

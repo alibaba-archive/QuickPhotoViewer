@@ -32,6 +32,11 @@ class ExampleBottomToolbar: UIView {
 
     var shareHandler: (() -> Void)?
 
+    // MARK: - Public
+    func setCurrentIndex(_ currentIndex: Int, totalCount: Int) {
+        pageIndexLabel.text = "\(currentIndex) / \(totalCount)"
+    }
+
     // MARK: - Life cycle
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -52,7 +57,7 @@ class ExampleBottomToolbar: UIView {
     fileprivate func commonInit() {
         backgroundColor = .clear
 
-        pageIndexLabel.text = "1 / 1"
+        setCurrentIndex(0, totalCount: 0)
         downloadImageView.image = #imageLiteral(resourceName: "downloadIcon")
         shareImageView.image = #imageLiteral(resourceName: "shareIcon")
         shareImageView.isUserInteractionEnabled = true

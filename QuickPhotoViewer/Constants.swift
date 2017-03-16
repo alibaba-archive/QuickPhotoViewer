@@ -9,6 +9,7 @@
 import UIKit
 
 internal struct PhotoPreview {
+    static let pageSpacing: CGFloat = 20
     static let maximumZoomScale: CGFloat = 3
     static let minimumZoomScale: CGFloat = 1
 }

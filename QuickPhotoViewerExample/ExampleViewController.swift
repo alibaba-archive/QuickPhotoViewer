@@ -83,13 +83,17 @@ class ExampleViewController: UICollectionViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let photoUrl = kExamplePhotos[indexPath.row]
-        let photo = QPhoto(url: URL(string: photoUrl)!, thumbnailUrl: nil)
+        let photoUrls = view.bounds.width < view.bounds.height ? Array(kExamplePhotos[0..<9]) : kExamplePhotos
+        let photos = photoUrls.map { QPhoto(url: URL(string: $0)!, thumbnailUrl: nil) }
 
         photoViewer = QuickPhotoViewer()
         photoViewer?.topToolbar = topToolbar
         photoViewer?.bottomToolbar = bottomToolbar
-        photoViewer?.photos = [photo]
+        photoViewer?.photos = photos
+        photoViewer?.initialPageIndex = indexPath.row
+        photoViewer?.dataSource = self
+        photoViewer?.delegate = self
+        bottomToolbar.setCurrentIndex(indexPath.row + 1, totalCount: photos.count)
         if let cell = collectionView.cellForItem(at: indexPath) as? ExamplePhotoCell {
             present(photoViewer!, from: cell.imageView)
         }
@@ -124,5 +128,16 @@ extension ExampleViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return kExamplePhotoSpacing
+    }
+}
+
+extension ExampleViewController: QuickPhotoViewerDataSource, QuickPhotoViewerDelegate {
+    // MARK: - QuickPhotoViewerDataSource & QuickPhotoViewerDelegate
+    func photoViewer(_ photoViewer: QuickPhotoViewer, didScrollToPageAt pageIndex: Int) {
+        let totalCount = view.bounds.width < view.bounds.height ? 9 : 10
+        bottomToolbar.setCurrentIndex(pageIndex + 1, totalCount: totalCount)
+        if let cell = collectionView?.cellForItem(at: IndexPath(row: pageIndex, section: 0)) as? ExamplePhotoCell {
+            photoViewer.transitioningSourceView = cell.imageView
+        }
     }
 }

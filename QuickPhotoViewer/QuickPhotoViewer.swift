@@ -41,6 +41,9 @@ public class QuickPhotoViewer: UIViewController {
         }
         return photos[currentPageIndex]
     }
+    public var viewControllers: [UIViewController]? {
+        return pageViewController.viewControllers
+    }
 
     fileprivate lazy var pageViewController: UIPageViewController = self.makePageViewController()
     fileprivate lazy var topGradientLayer: CAGradientLayer = self.makeTopGradientLayer()
@@ -131,6 +134,7 @@ extension QuickPhotoViewer {
         let photoViewController = PhotoViewController()
         photoViewController.delegate = self
         photoViewController.photo = photos[currentPageIndex]
+        photoViewController.pageIndex = currentPageIndex
         pageViewController.setViewControllers([photoViewController], direction: .forward, animated: false, completion: nil)
     }
 
@@ -146,9 +150,13 @@ extension QuickPhotoViewer {
             case .normal:
                 topToolbar?.alpha = 1
                 bottomToolbar?.alpha = 1
+                topGradientLayer.opacity = 1
+                bottomGradientLayer.opacity = 1
             case .fullScreen:
                 topToolbar?.alpha = 0
                 bottomToolbar?.alpha = 0
+                topGradientLayer.opacity = 0
+                bottomGradientLayer.opacity = 0
             }
         case .fade:
             switch newMode {
@@ -156,11 +164,15 @@ extension QuickPhotoViewer {
                 UIView.animate(withDuration: 0.3, animations: {
                     self.topToolbar?.alpha = 1
                     self.bottomToolbar?.alpha = 1
+                    self.topGradientLayer.opacity = 1
+                    self.bottomGradientLayer.opacity = 1
                 })
             case .fullScreen:
                 UIView.animate(withDuration: 0.3, animations: {
                     self.topToolbar?.alpha = 0
                     self.bottomToolbar?.alpha = 0
+                    self.topGradientLayer.opacity = 0
+                    self.bottomGradientLayer.opacity = 0
                 })
             }
         case .slide:
@@ -173,6 +185,8 @@ extension QuickPhotoViewer {
                     bottomToolbarBottom.constant = 0
                 }
                 UIView.animate(withDuration: 0.25, animations: {
+                    self.topGradientLayer.opacity = 1
+                    self.bottomGradientLayer.opacity = 1
                     self.view.layoutIfNeeded()
                 })
             case .fullScreen:
@@ -183,6 +197,8 @@ extension QuickPhotoViewer {
                     bottomToolbarBottom.constant = bottomToolbar.frame.height
                 }
                 UIView.animate(withDuration: 0.25, animations: {
+                    self.topGradientLayer.opacity = 0
+                    self.bottomGradientLayer.opacity = 0
                     self.view.layoutIfNeeded()
                 })
             }
@@ -191,7 +207,7 @@ extension QuickPhotoViewer {
 
     // MARK: - Make functions
     fileprivate func makePageViewController() -> UIPageViewController {
-        let pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
+        let pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey: PhotoPreview.pageSpacing])
         return pageViewController
     }
 
@@ -215,15 +231,48 @@ extension QuickPhotoViewer {
 extension QuickPhotoViewer: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     // MARK: - UIPageViewControllerDataSource & UIPageViewControllerDelegate
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        return nil
+        guard let currentViewController = viewController as? PhotoViewController else {
+            return nil
+        }
+        if currentViewController.pageIndex == 0 {
+            return nil
+        }
+        let photoViewController = PhotoViewController()
+        photoViewController.delegate = self
+        photoViewController.photo = photos[currentViewController.pageIndex - 1]
+        photoViewController.pageIndex = currentViewController.pageIndex - 1
+        return photoViewController
     }
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        return nil
+        guard let currentViewController = viewController as? PhotoViewController else {
+            return nil
+        }
+        if currentViewController.pageIndex == photos.count - 1 {
+            return nil
+        }
+        let photoViewController = PhotoViewController()
+        photoViewController.delegate = self
+        photoViewController.photo = photos[currentViewController.pageIndex + 1]
+        photoViewController.pageIndex = currentViewController.pageIndex + 1
+        return photoViewController
+    }
+
+    public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        guard let pendingViewController = pendingViewControllers.first as? PhotoViewController else {
+            return
+        }
+        delegate?.photoViewer(self, willScrollToPageAt: pendingViewController.pageIndex)
     }
 
     public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-
+        if completed {
+            guard let currentViewController = pageViewController.viewControllers?.first as? PhotoViewController else {
+                return
+            }
+            currentPageIndex = currentViewController.pageIndex
+            delegate?.photoViewer(self, didScrollToPageAt: currentPageIndex)
+        }
     }
 }
 

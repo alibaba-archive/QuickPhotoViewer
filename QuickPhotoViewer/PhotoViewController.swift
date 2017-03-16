@@ -21,13 +21,16 @@ internal class PhotoViewController: UIViewController {
     internal var photo: QPhoto!
     internal var pageIndex = 0
 
-    fileprivate lazy var scrollView: UIScrollView = self.makeScrollView()
-    fileprivate lazy var imageView: UIImageView = self.makeImageView()
+    fileprivate(set) lazy var scrollView: UIScrollView = self.makeScrollView()
+    fileprivate(set) lazy var imageView: UIImageView = self.makeImageView()
 
     fileprivate var imageViewLeading: NSLayoutConstraint!
     fileprivate var imageViewTrailing: NSLayoutConstraint!
     fileprivate var imageViewTop: NSLayoutConstraint!
     fileprivate var imageViewBottom: NSLayoutConstraint!
+
+    fileprivate var panGestureRecognizer: UIPanGestureRecognizer!
+    fileprivate var panGestureStartPoint: CGPoint?
 
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -93,6 +96,10 @@ extension PhotoViewController {
         view.addGestureRecognizer(backgroundDoubleTapGesture)
 
         backgroundSingleTapGesture.require(toFail: backgroundDoubleTapGesture)
+
+        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(backgroundPanned(_:)))
+        panGestureRecognizer.delegate = self
+        view.addGestureRecognizer(panGestureRecognizer)
     }
 
     fileprivate func loadPhoto() {
@@ -199,6 +206,33 @@ extension PhotoViewController {
 
     func backgroundDoubleTapped(_ sender: UITapGestureRecognizer) {
         delegate?.photoViewController(self, didDoubleTapBackgroundAt: sender.location(in: view), in: view)
+    }
+
+    func backgroundPanned(_ sender: UIPanGestureRecognizer) {
+        guard scrollView.zoomScale == scrollView.minimumZoomScale else {
+            return
+        }
+        let currentLocation = sender.location(in: view)
+        switch sender.state {
+        case .began:
+            panGestureStartPoint = currentLocation
+        case .changed:
+            if let panGestureStartPoint = panGestureStartPoint {
+                let distanceX = currentLocation.x - panGestureStartPoint.x
+                let distanceY = currentLocation.y - panGestureStartPoint.y
+                print("distanceX: \(distanceX)")
+                print("distanceY: \(distanceY)")
+            }
+        case .possible, .ended, .cancelled, .failed:
+            panGestureStartPoint = nil
+        }
+    }
+}
+
+extension PhotoViewController: UIGestureRecognizerDelegate {
+    // MARK: - UIGestureRecognizerDelegate
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return false
     }
 }
 
