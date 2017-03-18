@@ -45,9 +45,12 @@ public class QuickPhotoViewer: UIViewController {
         return pageViewController.viewControllers
     }
 
+    internal var screenshot: UIImage?
+
     fileprivate lazy var pageViewController: UIPageViewController = self.makePageViewController()
     fileprivate lazy var topGradientLayer: CAGradientLayer = self.makeTopGradientLayer()
     fileprivate lazy var bottomGradientLayer: CAGradientLayer = self.makeBottomGradientLayer()
+    fileprivate lazy var backgroundMaskView: UIView = self.makeBackgroundMaskView()
 
     fileprivate var topToolbarTop: NSLayoutConstraint?
     fileprivate var bottomToolbarBottom: NSLayoutConstraint?
@@ -75,6 +78,7 @@ public class QuickPhotoViewer: UIViewController {
         if let transitioningSourceView = transitioningSourceView {
             let transitioningDelegate = QuickPhotoViewerTransitioning(.dismiss(toView: transitioningSourceView))
             self.transitioningDelegate = transitioningDelegate
+            prepareForDismiss()
             super.dismiss(animated: flag, completion: completion)
         } else {
             super.dismiss(animated: flag, completion: completion)
@@ -84,15 +88,24 @@ public class QuickPhotoViewer: UIViewController {
 
 extension QuickPhotoViewer {
     // MARK: - Public
+    internal func setAlpha(_ alpha: CGFloat) {
+        backgroundMaskView.alpha = alpha
+    }
 }
 
 extension QuickPhotoViewer {
     // MARK: - Helpers
     fileprivate func setupUI() {
-        view.backgroundColor = .black
+        if let screenshot = screenshot {
+            view.backgroundColor = UIColor(patternImage: screenshot)
+        }
         extendedLayoutIncludesOpaqueBars = true
         automaticallyAdjustsScrollViewInsets = false
         edgesForExtendedLayout = .top
+
+        view.insertSubview(backgroundMaskView, at: 0)
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroundMaskView]|", options: [], metrics: nil, views: ["backgroundMaskView": backgroundMaskView]))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroundMaskView]|", options: [], metrics: nil, views: ["backgroundMaskView": backgroundMaskView]))
 
         pageViewController.dataSource = self
         pageViewController.delegate = self
@@ -107,6 +120,7 @@ extension QuickPhotoViewer {
 
     fileprivate func configureToolbars() {
         if let topToolbar = topToolbar {
+            topToolbar.alpha = 1
             topToolbar.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(topToolbar)
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topToolbar]|", options: [], metrics: nil, views: ["topToolbar": topToolbar]))
@@ -114,6 +128,7 @@ extension QuickPhotoViewer {
             view.addConstraint(topToolbarTop!)
         }
         if let bottomToolbar = bottomToolbar {
+            bottomToolbar.alpha = 1
             bottomToolbar.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(bottomToolbar)
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomToolbar]|", options: [], metrics: nil, views: ["bottomToolbar": bottomToolbar]))
@@ -133,9 +148,15 @@ extension QuickPhotoViewer {
         currentPageIndex = initialPageIndex
         let photoViewController = PhotoViewController()
         photoViewController.delegate = self
+        photoViewController.parentPhotoViewer = self
         photoViewController.photo = photos[currentPageIndex]
         photoViewController.pageIndex = currentPageIndex
         pageViewController.setViewControllers([photoViewController], direction: .forward, animated: false, completion: nil)
+    }
+
+    fileprivate func prepareForDismiss() {
+        topToolbar?.alpha = 0
+        bottomToolbar?.alpha = 0
     }
 
     fileprivate func switchViewMode(to newMode: QuickPhotoViewerViewMode, with animation: QuickPhotoViewerToolbarAnimation) {
@@ -226,6 +247,13 @@ extension QuickPhotoViewer {
         bottomGradientLayer.endPoint = Gradient.endPoint
         return bottomGradientLayer
     }
+
+    fileprivate func makeBackgroundMaskView() -> UIView {
+        let backgroundMaskView = UIView()
+        backgroundMaskView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundMaskView.backgroundColor = .black
+        return backgroundMaskView
+    }
 }
 
 extension QuickPhotoViewer: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
@@ -239,6 +267,7 @@ extension QuickPhotoViewer: UIPageViewControllerDataSource, UIPageViewController
         }
         let photoViewController = PhotoViewController()
         photoViewController.delegate = self
+        photoViewController.parentPhotoViewer = self
         photoViewController.photo = photos[currentViewController.pageIndex - 1]
         photoViewController.pageIndex = currentViewController.pageIndex - 1
         return photoViewController
@@ -253,6 +282,7 @@ extension QuickPhotoViewer: UIPageViewControllerDataSource, UIPageViewController
         }
         let photoViewController = PhotoViewController()
         photoViewController.delegate = self
+        photoViewController.parentPhotoViewer = self
         photoViewController.photo = photos[currentViewController.pageIndex + 1]
         photoViewController.pageIndex = currentViewController.pageIndex + 1
         return photoViewController

@@ -18,6 +18,7 @@ internal protocol PhotoViewControllerDelegate: class {
 
 internal class PhotoViewController: UIViewController {
     internal weak var delegate: PhotoViewControllerDelegate?
+    internal weak var parentPhotoViewer: QuickPhotoViewer?
     internal var photo: QPhoto!
     internal var pageIndex = 0
 
@@ -30,7 +31,7 @@ internal class PhotoViewController: UIViewController {
     fileprivate var imageViewBottom: NSLayoutConstraint!
 
     fileprivate var panGestureRecognizer: UIPanGestureRecognizer!
-    fileprivate var panGestureStartPoint: CGPoint?
+    fileprivate var imageViewPanningStartRect: CGRect?
 
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -40,12 +41,22 @@ internal class PhotoViewController: UIViewController {
         loadPhoto()
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        zoomImageViewToMinimum(animated: true)
+        coordinator.animate(alongsideTransition: { (_) in
+            self.updateScrollViewZoomScale()
+            }) { (_) in
+
+        }
+    }
+
     // MARK: - Public
     internal func zoomPhotoToFit(from point: CGPoint, in view: UIView) {
         if scrollView.zoomScale == scrollView.minimumZoomScale {
             zoomImageViewToFit(from: view.convert(point, to: imageView))
         } else {
-            zoomImageViewToMinimum()
+            zoomImageViewToMinimum(animated: true)
         }
     }
 }
@@ -185,8 +196,8 @@ extension PhotoViewController {
         scrollView.zoom(to: newRect, animated: true)
     }
 
-    fileprivate func zoomImageViewToMinimum() {
-        scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
+    fileprivate func zoomImageViewToMinimum(animated: Bool) {
+        scrollView.setZoomScale(scrollView.minimumZoomScale, animated: animated)
     }
 }
 
@@ -212,26 +223,63 @@ extension PhotoViewController {
         guard scrollView.zoomScale == scrollView.minimumZoomScale else {
             return
         }
-        let currentLocation = sender.location(in: view)
+
         switch sender.state {
         case .began:
-            panGestureStartPoint = currentLocation
+            imageViewPanningStartRect = imageView.frame
         case .changed:
-            if let panGestureStartPoint = panGestureStartPoint {
-                let distanceX = currentLocation.x - panGestureStartPoint.x
-                let distanceY = currentLocation.y - panGestureStartPoint.y
-                print("distanceX: \(distanceX)")
-                print("distanceY: \(distanceY)")
+            guard let startRect = imageViewPanningStartRect else {
+                return
             }
+            let translation = sender.translation(in: view)
+            imageView.center = CGPoint(x: startRect.midX + translation.x, y: startRect.midY + translation.y)
+
+            let scale = min(max(1 - translation.y / view.bounds.height, PhotoPanning.gestureMinimumZoomScale), 1)
+            imageView.frame.size = CGSize(width: startRect.width * scale, height: startRect.height * scale)
+
+            let alpha = min(max(1 - translation.y / (view.bounds.height / 2), PhotoPanning.gestureMinimumAlpha), 1)
+            parentPhotoViewer?.setAlpha(alpha)
         case .possible, .ended, .cancelled, .failed:
-            panGestureStartPoint = nil
+            let velocity = sender.velocity(in: view)
+            let translation = sender.translation(in: view)
+
+            if velocity.y > 0 && translation.y > 0 {
+                imageViewPanningStartRect = nil
+                parentPhotoViewer?.dismiss(animated: true, completion: nil)
+            } else {
+                UIView.animate(withDuration: 0.2,
+                               delay: 0,
+                               options: [.beginFromCurrentState, .curveEaseOut],
+                               animations: {
+                    if let imageViewPanningStartRect = self.imageViewPanningStartRect {
+                        self.imageView.frame = imageViewPanningStartRect
+                    }
+                    self.parentPhotoViewer?.setAlpha(1)
+                    }, completion: { (_) in
+                        self.imageViewPanningStartRect = nil
+                })
+            }
         }
     }
 }
 
 extension PhotoViewController: UIGestureRecognizerDelegate {
     // MARK: - UIGestureRecognizerDelegate
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard scrollView.zoomScale == scrollView.minimumZoomScale else {
+            return false
+        }
+        if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer, gestureRecognizer == panGestureRecognizer {
+            let velocity = panGestureRecognizer.velocity(in: view)
+            guard velocity.y > 0 else {
+                return false
+            }
+
+            let radian = atan(velocity.x / velocity.y)
+            let angle = radian * 180 / .pi
+            let triggerAngle = PhotoPanning.gestureMaximumTriggerAngle
+            return -triggerAngle...triggerAngle ~= angle
+        }
         return false
     }
 }

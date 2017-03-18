@@ -14,6 +14,12 @@ internal struct PhotoPreview {
     static let minimumZoomScale: CGFloat = 1
 }
 
+internal struct PhotoPanning {
+    static let gestureMaximumTriggerAngle: CGFloat = 20
+    static let gestureMinimumZoomScale: CGFloat = 0.3
+    static let gestureMinimumAlpha: CGFloat = 0
+}
+
 internal struct Gradient {
     static let height: CGFloat = 110
     static let startColor = UIColor.black.withAlphaComponent(0.3).cgColor

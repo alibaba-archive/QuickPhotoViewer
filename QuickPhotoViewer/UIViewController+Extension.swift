@@ -13,6 +13,17 @@ public extension UIViewController {
                         from view: UIView,
                         animated flag: Bool = true,
                         completion: (() -> Void)? = nil) {
+        let screenshot: UIImage? = {
+            guard let layer = UIApplication.shared.keyWindow?.layer else {
+                return nil
+            }
+            UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, UIScreen.main.scale)
+            layer.render(in: UIGraphicsGetCurrentContext()!)
+            let screenshot = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            return screenshot
+        }()
+        photoViewer.screenshot = screenshot
         let transitioningDelegate = QuickPhotoViewerTransitioning(.present(fromView: view))
         photoViewer.transitioningDelegate = transitioningDelegate
         present(photoViewer, animated: flag, completion: completion)

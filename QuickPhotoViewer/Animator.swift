@@ -91,8 +91,10 @@ internal class QuickPhotoViewerAnimator: NSObject, UIViewControllerAnimatedTrans
                 let toRect = transitionContext.containerView.convert(toView.frame, from: toView.superview)
                 toViewController.view.frame = transitionContext.finalFrame(for: toViewController)
                 transitionContext.containerView.addSubview(toViewController.view)
+
                 transitionContext.containerView.addSubview(fromViewController.view)
                 fromViewController.view.alpha = 1
+
                 fromPhoto.frame = fromPhotoRect
                 transitionContext.containerView.addSubview(fromPhoto)
 
@@ -100,9 +102,9 @@ internal class QuickPhotoViewerAnimator: NSObject, UIViewControllerAnimatedTrans
                                delay: 0,
                                options: [.beginFromCurrentState],
                                animations: {
-                                let scale = CGAffineTransform(scaleX: toRect.width / fromPhotoRect.width, y: toRect.height / fromPhotoRect.height)
-                                let translation = CGAffineTransform(translationX: toRect.midX - fromPhotoRect.midX, y: toRect.midY - fromPhotoRect.midY)
-                                fromPhoto.transform = scale.concatenating(translation)
+                                fromPhoto.clipsToBounds = true
+                                fromPhoto.layer.cornerRadius = toView.layer.cornerRadius
+                                fromPhoto.frame = toRect
                                 fromViewController.view.alpha = 0
                     }, completion: { _ in
                         fromPhoto.removeFromSuperview()
