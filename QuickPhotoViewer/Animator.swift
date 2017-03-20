@@ -88,7 +88,14 @@ internal class QuickPhotoViewerAnimator: NSObject, UIViewControllerAnimatedTrans
                 let fromPhotoRect = transitionContext.containerView.convert(photoViewController.imageView.frame, from: photoViewController.imageView.superview)
                 photoViewController.imageView.removeFromSuperview()
 
-                let toRect = transitionContext.containerView.convert(toView.frame, from: toView.superview)
+                let toRect: CGRect = {
+                    switch photoViewer.photoTransitionAnimation {
+                    case .default:
+                        return transitionContext.containerView.convert(toView.frame, from: toView.superview)
+                    case .dropDown:
+                        return CGRect(origin: CGPoint(x: fromPhotoRect.minX, y: transitionContext.containerView.frame.maxY), size: fromPhotoRect.size)
+                    }
+                }()
                 toViewController.view.frame = transitionContext.finalFrame(for: toViewController)
                 transitionContext.containerView.addSubview(toViewController.view)
 

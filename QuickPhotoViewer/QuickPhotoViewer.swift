@@ -19,6 +19,11 @@ public enum QuickPhotoViewerToolbarAnimation {
     case slide
 }
 
+public enum QuickPhotoViewerPhotoTransitionAnimation {
+    case `default`
+    case dropDown
+}
+
 public class QuickPhotoViewer: UIViewController {
     public weak var dataSource: QuickPhotoViewerDataSource?
     public weak var delegate: QuickPhotoViewerDelegate?
@@ -28,6 +33,7 @@ public class QuickPhotoViewer: UIViewController {
     public var topToolbar: UIView?
     public var bottomToolbar: UIView?
     public var toolbarUpdateAnimation: QuickPhotoViewerToolbarAnimation = .slide
+    public var photoTransitionAnimation: QuickPhotoViewerPhotoTransitionAnimation = .default
     public var transitioningSourceView: UIView?
 
     public fileprivate(set) var viewMode: QuickPhotoViewerViewMode = .normal
@@ -90,6 +96,10 @@ extension QuickPhotoViewer {
     // MARK: - Public
     internal func setAlpha(_ alpha: CGFloat) {
         backgroundMaskView.alpha = alpha
+        topToolbar?.alpha = alpha
+        bottomToolbar?.alpha = alpha
+        topGradientLayer.opacity = Float(alpha)
+        bottomGradientLayer.opacity = Float(alpha)
     }
 }
 
@@ -103,6 +113,7 @@ extension QuickPhotoViewer {
         automaticallyAdjustsScrollViewInsets = false
         edgesForExtendedLayout = .top
 
+        backgroundMaskView.alpha = 1
         view.insertSubview(backgroundMaskView, at: 0)
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroundMaskView]|", options: [], metrics: nil, views: ["backgroundMaskView": backgroundMaskView]))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroundMaskView]|", options: [], metrics: nil, views: ["backgroundMaskView": backgroundMaskView]))
@@ -113,27 +124,34 @@ extension QuickPhotoViewer {
         addChildViewController(pageViewController)
         view.addSubview(pageViewController.view)
         pageViewController.didMove(toParentViewController: self)
-
-        view.layer.insertSublayer(topGradientLayer, above: pageViewController.view.layer)
-        view.layer.insertSublayer(bottomGradientLayer, above: pageViewController.view.layer)
     }
 
     fileprivate func configureToolbars() {
         if let topToolbar = topToolbar {
             topToolbar.alpha = 1
+            topGradientLayer.opacity = 1
+
             topToolbar.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(topToolbar)
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topToolbar]|", options: [], metrics: nil, views: ["topToolbar": topToolbar]))
             topToolbarTop = NSLayoutConstraint(item: topToolbar, attribute: .top, relatedBy: .equal, toItem: topLayoutGuide, attribute: .bottom, multiplier: 1, constant: 0)
             view.addConstraint(topToolbarTop!)
+
+            view.bringSubview(toFront: topToolbar)
+            view.layer.insertSublayer(topGradientLayer, below: topToolbar.layer)
         }
         if let bottomToolbar = bottomToolbar {
             bottomToolbar.alpha = 1
+            bottomGradientLayer.opacity = 1
+
             bottomToolbar.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(bottomToolbar)
             view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomToolbar]|", options: [], metrics: nil, views: ["bottomToolbar": bottomToolbar]))
             bottomToolbarBottom = NSLayoutConstraint(item: bottomToolbar, attribute: .bottom, relatedBy: .equal, toItem: bottomLayoutGuide, attribute: .top, multiplier: 1, constant: 0)
             view.addConstraint(bottomToolbarBottom!)
+
+            view.bringSubview(toFront: bottomToolbar)
+            view.layer.insertSublayer(bottomGradientLayer, below: bottomToolbar.layer)
         }
         switchViewMode(to: viewMode, with: .none)
     }

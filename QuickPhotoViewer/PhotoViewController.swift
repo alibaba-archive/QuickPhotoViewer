@@ -155,9 +155,15 @@ extension PhotoViewController {
         guard let image = imageView.image else {
             return
         }
-        let minimumZoomScale = min(min(view.bounds.width / image.size.width, view.bounds.height / image.size.height), 1)
+
+        let minimumZoomScale = min(view.bounds.width / image.size.width, view.bounds.height / image.size.height)
         scrollView.minimumZoomScale = minimumZoomScale
+
+        let maximumZoomScale = max(max(view.bounds.width / image.size.width, view.bounds.height / image.size.height), PhotoPreview.maximumZoomScale)
+        scrollView.maximumZoomScale = maximumZoomScale
+
         scrollView.zoomScale = minimumZoomScale
+        zoomImageView()
     }
 
     fileprivate func zoomImageView() {
