@@ -33,7 +33,7 @@ public class QuickPhotoViewer: UIViewController {
     public var topToolbar: UIView?
     public var bottomToolbar: UIView?
     public var toolbarUpdateAnimation: QuickPhotoViewerToolbarAnimation = .slide
-    public var photoTransitionAnimation: QuickPhotoViewerPhotoTransitionAnimation = .default
+    public var photoTransitionAnimation: QuickPhotoViewerPhotoTransitionAnimation = .dropDown
     public var transitioningSourceView: UIView?
 
     public fileprivate(set) var viewMode: QuickPhotoViewerViewMode = .normal
@@ -81,14 +81,10 @@ public class QuickPhotoViewer: UIViewController {
     }
 
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        if let transitioningSourceView = transitioningSourceView {
-            let transitioningDelegate = QuickPhotoViewerTransitioning(.dismiss(toView: transitioningSourceView))
-            self.transitioningDelegate = transitioningDelegate
-            prepareForDismiss()
-            super.dismiss(animated: flag, completion: completion)
-        } else {
-            super.dismiss(animated: flag, completion: completion)
-        }
+        let transitioningDelegate = QuickPhotoViewerTransitioning(.dismiss(toView: transitioningSourceView))
+        self.transitioningDelegate = transitioningDelegate
+        prepareForDismiss()
+        super.dismiss(animated: flag, completion: completion)
     }
 }
 

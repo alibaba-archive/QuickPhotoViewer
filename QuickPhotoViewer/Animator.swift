@@ -10,7 +10,7 @@ import UIKit
 
 internal enum QuickPhotoViewerAnimation {
     case present(fromView: UIView)
-    case dismiss(toView: UIView)
+    case dismiss(toView: UIView?)
 }
 
 internal class QuickPhotoViewerTransitioning: NSObject, UIViewControllerTransitioningDelegate {
@@ -81,71 +81,48 @@ internal class QuickPhotoViewerAnimator: NSObject, UIViewControllerAnimatedTrans
             guard let fromViewController = transitionContext.viewController(forKey: .from), let toViewController = transitionContext.viewController(forKey: .to) else {
                 return
             }
-
-            if let photoViewer = fromViewController as? QuickPhotoViewer, let photoViewController = photoViewer.viewControllers?.first as? PhotoViewController {
-                let fromPhoto = UIImageView(image: photoViewController.imageView.image)
-                fromPhoto.contentMode = .scaleAspectFill
-                let fromPhotoRect = transitionContext.containerView.convert(photoViewController.imageView.frame, from: photoViewController.imageView.superview)
-                photoViewController.imageView.removeFromSuperview()
-
-                let toRect: CGRect = {
-                    switch photoViewer.photoTransitionAnimation {
-                    case .default:
-                        return transitionContext.containerView.convert(toView.frame, from: toView.superview)
-                    case .dropDown:
-                        return CGRect(origin: CGPoint(x: fromPhotoRect.minX, y: transitionContext.containerView.frame.maxY), size: fromPhotoRect.size)
-                    }
-                }()
-                toViewController.view.frame = transitionContext.finalFrame(for: toViewController)
-                transitionContext.containerView.addSubview(toViewController.view)
-
-                transitionContext.containerView.addSubview(fromViewController.view)
-                fromViewController.view.alpha = 1
-
-                fromPhoto.frame = fromPhotoRect
-                transitionContext.containerView.addSubview(fromPhoto)
-
-                UIView.animate(withDuration: transitionDuration(using: transitionContext),
-                               delay: 0,
-                               options: [.beginFromCurrentState],
-                               animations: {
-                                fromPhoto.clipsToBounds = true
-                                fromPhoto.layer.cornerRadius = toView.layer.cornerRadius
-                                fromPhoto.frame = toRect
-                                fromViewController.view.alpha = 0
-                    }, completion: { _ in
-                        fromPhoto.removeFromSuperview()
-                        let success = !transitionContext.transitionWasCancelled
-                        if !success {
-                            toViewController.view.removeFromSuperview()
-                        }
-                        transitionContext.completeTransition(success)
-                })
-            } else {
-                let fromRect = transitionContext.initialFrame(for: fromViewController)
-                let toRect = transitionContext.containerView.convert(toView.frame, from: toView.superview)
-
-                toViewController.view.frame = transitionContext.finalFrame(for: toViewController)
-                transitionContext.containerView.addSubview(toViewController.view)
-                transitionContext.containerView.addSubview(fromViewController.view)
-                fromViewController.view.alpha = 1
-
-                UIView.animate(withDuration: transitionDuration(using: transitionContext),
-                               delay: 0,
-                               options: [.beginFromCurrentState],
-                               animations: {
-                                let scale = CGAffineTransform(scaleX: toRect.width / fromRect.width, y: toRect.height / fromRect.height)
-                                let translation = CGAffineTransform(translationX: toRect.midX - fromRect.midX, y: toRect.midY - fromRect.midY)
-                                fromViewController.view.transform = scale.concatenating(translation)
-                                fromViewController.view.alpha = 0
-                    }, completion: { _ in
-                        let success = !transitionContext.transitionWasCancelled
-                        if !success {
-                            toViewController.view.removeFromSuperview()
-                        }
-                        transitionContext.completeTransition(success)
-                })
+            guard let photoViewer = fromViewController as? QuickPhotoViewer, let photoViewController = photoViewer.viewControllers?.first as? PhotoViewController else {
+                return
             }
+
+            let fromPhoto = UIImageView(image: photoViewController.imageView.image)
+            fromPhoto.contentMode = .scaleAspectFill
+            let fromPhotoRect = transitionContext.containerView.convert(photoViewController.imageView.frame, from: photoViewController.imageView.superview)
+            photoViewController.imageView.removeFromSuperview()
+
+            let toRect: CGRect = {
+                if let toView = toView, photoViewer.photoTransitionAnimation == .default {
+                    return transitionContext.containerView.convert(toView.frame, from: toView.superview)
+                }
+                return CGRect(origin: CGPoint(x: fromPhotoRect.minX, y: transitionContext.containerView.frame.maxY), size: fromPhotoRect.size)
+            }()
+            toViewController.view.frame = transitionContext.finalFrame(for: toViewController)
+            transitionContext.containerView.addSubview(toViewController.view)
+
+            transitionContext.containerView.addSubview(fromViewController.view)
+            fromViewController.view.alpha = 1
+
+            fromPhoto.frame = fromPhotoRect
+            transitionContext.containerView.addSubview(fromPhoto)
+
+            UIView.animate(withDuration: transitionDuration(using: transitionContext),
+                           delay: 0,
+                           options: [.beginFromCurrentState],
+                           animations: {
+                            fromPhoto.clipsToBounds = true
+                            fromPhoto.frame = toRect
+                            if let toView = toView {
+                                fromPhoto.layer.cornerRadius = toView.layer.cornerRadius
+                            }
+                            fromViewController.view.alpha = 0
+                }, completion: { _ in
+                    fromPhoto.removeFromSuperview()
+                    let success = !transitionContext.transitionWasCancelled
+                    if !success {
+                        toViewController.view.removeFromSuperview()
+                    }
+                    transitionContext.completeTransition(success)
+            })
         }
     }
 }
