@@ -122,9 +122,9 @@ extension PhotoViewController {
             imageView.kf.setImage(with: imageResource,
                                   placeholder: photo.localThumbnailImage,
                                   options: nil,
-                                  progressBlock: { (downloadedSize, totalSize) in
+                                  progressBlock: { (_, _) in
 
-                }, completionHandler: { (image, error, cacheType, url) in
+                }, completionHandler: { (_, _, _, _) in
                     self.updateScrollViewZoomScale()
             })
         }

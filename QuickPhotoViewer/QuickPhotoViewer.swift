@@ -28,7 +28,16 @@ public class QuickPhotoViewer: UIViewController {
     public weak var dataSource: QuickPhotoViewerDataSource?
     public weak var delegate: QuickPhotoViewerDelegate?
 
-    public var photos = [QPhoto]()
+    public var photos = [QPhoto]() {
+        didSet {
+            if photos.isEmpty {
+                dismiss(animated: true, completion: nil)
+            } else {
+                initialPageIndex = min(currentPageIndex, photos.count - 1)
+                initPages()
+            }
+        }
+    }
     public var initialPageIndex = 0
     public var topToolbar: UIView?
     public var bottomToolbar: UIView?
@@ -73,6 +82,16 @@ public class QuickPhotoViewer: UIViewController {
         super.viewWillLayoutSubviews()
         topGradientLayer.frame = CGRect(origin: .zero, size: CGSize(width: view.bounds.width, height: Gradient.height))
         bottomGradientLayer.frame = CGRect(origin: CGPoint(x: 0, y: view.bounds.height - Gradient.height), size: CGSize(width: view.bounds.width, height: Gradient.height))
+    }
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if viewMode == .normal {
+            topToolbar?.alpha = 1
+            bottomToolbar?.alpha = 1
+            topGradientLayer.opacity = 1
+            bottomGradientLayer.opacity = 1
+        }
     }
 
     // MARK: - Overriding

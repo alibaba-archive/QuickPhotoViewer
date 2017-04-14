@@ -43,9 +43,9 @@ class ExampleViewController: UICollectionViewController {
 
         collectionViewLayout.invalidateLayout()
         collectionView?.reloadData()
-        coordinator.animate(alongsideTransition: { (context) -> Void in
+        coordinator.animate(alongsideTransition: { (_) -> Void in
 
-            }) { (context) -> Void in
+            }) { (_) -> Void in
 
         }
     }

@@ -44,7 +44,7 @@ class ExampleTopToolbar: UIView {
         super.init(frame: frame)
         commonInit()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
