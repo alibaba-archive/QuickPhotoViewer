@@ -46,6 +46,16 @@ public extension QPhoto {
     }
 }
 
+public struct QPhotoDownloadProgress {
+    public var downloadedCount: Int64
+    public var totalCount: Int64
+
+    public init(downloadedCount: Int64, totalCount: Int64) {
+        self.downloadedCount = downloadedCount
+        self.totalCount = totalCount
+    }
+}
+
 internal extension URL {
     var cacheKey: String {
         var cacheKey = absoluteString

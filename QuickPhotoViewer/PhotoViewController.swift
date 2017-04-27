@@ -16,8 +16,15 @@ internal protocol PhotoViewControllerDelegate: class {
     func photoViewController(_ controller: PhotoViewController, didDoubleTapBackgroundAt point: CGPoint, in view: UIView)
 }
 
+internal protocol PhotoViewControllerDownloadDelegate: class {
+    func photoViewController(_ controller: PhotoViewController, willStartDownloading photo: QPhoto)
+    func photoViewController(_ controller: PhotoViewController, isDownloading photo: QPhoto, with progress: QPhotoDownloadProgress)
+    func photoViewController(_ controller: PhotoViewController, didFinishDownloading photo: QPhoto)
+}
+
 internal class PhotoViewController: UIViewController {
     internal weak var delegate: PhotoViewControllerDelegate?
+    internal weak var downloadDelegate: PhotoViewControllerDownloadDelegate?
     internal weak var parentPhotoViewer: QuickPhotoViewer?
     internal var photo: QPhoto!
     internal var pageIndex = 0
@@ -118,14 +125,17 @@ extension PhotoViewController {
             imageView.image = localImage
             self.updateScrollViewZoomScale()
         } else if let url = photo.url {
+            downloadDelegate?.photoViewController(self, willStartDownloading: photo)
             let imageResource = ImageResource(downloadURL: url, cacheKey: url.cacheKey)
             imageView.kf.setImage(with: imageResource,
                                   placeholder: photo.localThumbnailImage,
                                   options: nil,
-                                  progressBlock: { (_, _) in
-
+                                  progressBlock: { (downloadedCount, totalCount) in
+                                    let progress = QPhotoDownloadProgress(downloadedCount: downloadedCount, totalCount: totalCount)
+                                    self.downloadDelegate?.photoViewController(self, isDownloading: self.photo, with: progress)
                 }, completionHandler: { (_, _, _, _) in
                     self.updateScrollViewZoomScale()
+                    self.downloadDelegate?.photoViewController(self, didFinishDownloading: self.photo)
             })
         }
     }

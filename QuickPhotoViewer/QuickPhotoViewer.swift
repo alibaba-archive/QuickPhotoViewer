@@ -27,6 +27,7 @@ public enum QuickPhotoViewerPhotoTransitionAnimation {
 public class QuickPhotoViewer: UIViewController {
     public weak var dataSource: QuickPhotoViewerDataSource?
     public weak var delegate: QuickPhotoViewerDelegate?
+    public weak var downloadDelegate: QuickPhotoViewerDownloadDelegate?
 
     public var photos = [QPhoto]() {
         didSet {
@@ -181,6 +182,7 @@ extension QuickPhotoViewer {
         currentPageIndex = initialPageIndex
         let photoViewController = PhotoViewController()
         photoViewController.delegate = self
+        photoViewController.downloadDelegate = self
         photoViewController.parentPhotoViewer = self
         photoViewController.photo = photos[currentPageIndex]
         photoViewController.pageIndex = currentPageIndex
@@ -300,6 +302,7 @@ extension QuickPhotoViewer: UIPageViewControllerDataSource, UIPageViewController
         }
         let photoViewController = PhotoViewController()
         photoViewController.delegate = self
+        photoViewController.downloadDelegate = self
         photoViewController.parentPhotoViewer = self
         photoViewController.photo = photos[currentViewController.pageIndex - 1]
         photoViewController.pageIndex = currentViewController.pageIndex - 1
@@ -315,6 +318,7 @@ extension QuickPhotoViewer: UIPageViewControllerDataSource, UIPageViewController
         }
         let photoViewController = PhotoViewController()
         photoViewController.delegate = self
+        photoViewController.downloadDelegate = self
         photoViewController.parentPhotoViewer = self
         photoViewController.photo = photos[currentViewController.pageIndex + 1]
         photoViewController.pageIndex = currentViewController.pageIndex + 1
@@ -332,6 +336,12 @@ extension QuickPhotoViewer: UIPageViewControllerDataSource, UIPageViewController
         if completed {
             guard let currentViewController = pageViewController.viewControllers?.first as? PhotoViewController else {
                 return
+            }
+            previousViewControllers.forEach {
+                guard let previousViewController = $0 as? PhotoViewController else {
+                    return
+                }
+                previousViewController.downloadDelegate = nil
             }
             currentPageIndex = currentViewController.pageIndex
             delegate?.photoViewer(self, didScrollToPageAt: currentPageIndex)
@@ -365,5 +375,29 @@ extension QuickPhotoViewer: PhotoViewControllerDelegate {
 
     func photoViewController(_ controller: PhotoViewController, didDoubleTapBackgroundAt point: CGPoint, in view: UIView) {
         controller.zoomPhotoToFit(from: point, in: view)
+    }
+}
+
+extension QuickPhotoViewer: PhotoViewControllerDownloadDelegate {
+    // MARK: - PhotoViewControllerDownloadDelegate
+    func photoViewController(_ controller: PhotoViewController, willStartDownloading photo: QPhoto) {
+        guard controller.pageIndex == currentPageIndex else {
+            return
+        }
+        downloadDelegate?.photoViewer(self, willStartDownloading: photo)
+    }
+
+    func photoViewController(_ controller: PhotoViewController, isDownloading photo: QPhoto, with progress: QPhotoDownloadProgress) {
+        guard controller.pageIndex == currentPageIndex else {
+            return
+        }
+        downloadDelegate?.photoViewer(self, isDownloading: photo, with: progress)
+    }
+
+    func photoViewController(_ controller: PhotoViewController, didFinishDownloading photo: QPhoto) {
+        guard controller.pageIndex == currentPageIndex else {
+            return
+        }
+        downloadDelegate?.photoViewer(self, didFinishDownloading: photo)
     }
 }
