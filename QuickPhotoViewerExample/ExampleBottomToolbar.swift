@@ -84,7 +84,7 @@ class ExampleBottomToolbar: UIView {
     }
 
     // MARK: - Actions
-    func shareImageViewTapped(_ sender: UITapGestureRecognizer) {
+    @objc func shareImageViewTapped(_ sender: UITapGestureRecognizer) {
         shareHandler?()
     }
 }

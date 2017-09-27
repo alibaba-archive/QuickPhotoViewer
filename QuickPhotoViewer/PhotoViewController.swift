@@ -219,23 +219,23 @@ extension PhotoViewController {
 
 extension PhotoViewController {
     // MARK: - Actions
-    func imageTapped(_ sender: UITapGestureRecognizer) {
+    @objc func imageTapped(_ sender: UITapGestureRecognizer) {
         delegate?.photoViewControllerDidTapPhoto(self)
     }
 
-    func imageDoubleTapped(_ sender: UITapGestureRecognizer) {
+    @objc func imageDoubleTapped(_ sender: UITapGestureRecognizer) {
         delegate?.photoViewController(self, didDoubleTapPhotoAt: sender.location(in: imageView), in: imageView)
     }
 
-    func backgroundTapped(_ sender: UITapGestureRecognizer) {
+    @objc func backgroundTapped(_ sender: UITapGestureRecognizer) {
         delegate?.photoViewControllerDidTapBackground(self)
     }
 
-    func backgroundDoubleTapped(_ sender: UITapGestureRecognizer) {
+    @objc func backgroundDoubleTapped(_ sender: UITapGestureRecognizer) {
         delegate?.photoViewController(self, didDoubleTapBackgroundAt: sender.location(in: view), in: view)
     }
 
-    func backgroundPanned(_ sender: UIPanGestureRecognizer) {
+    @objc func backgroundPanned(_ sender: UIPanGestureRecognizer) {
         guard scrollView.zoomScale == scrollView.minimumZoomScale else {
             return
         }

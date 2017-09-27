@@ -83,7 +83,7 @@ class ExampleTopToolbar: UIView {
     }
 
     // MARK: - Actions
-    func closeImageViewTapped(_ sender: UITapGestureRecognizer) {
+    @objc func closeImageViewTapped(_ sender: UITapGestureRecognizer) {
         closeHandler?()
     }
 }
